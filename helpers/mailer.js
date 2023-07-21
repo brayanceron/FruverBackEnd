@@ -31,7 +31,6 @@ const enviarCorreoElectronico =async (destinatario,asunto,cuerpo)=>{
   }
 
 const generarReporte=(pedido)=>{
-  
     let nombresCliente=pedido.cliente.nombres;
     
     let cuerpoCorreo="Hola "+nombresCliente+", hemos procesado y enviado tu pedido \n\n";
