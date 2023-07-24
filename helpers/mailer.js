@@ -39,7 +39,6 @@ const generarReporte=(pedido)=>{
     pedido.detallePedidos.forEach(element => {
       //cuerpoCorreo+=""+element.producto.nombre+"\t\t"+(element.cantidadProducto+" X "+element.producto.valor+"$").padEnd(15)+"\t\t= "+element.totalProducto+"$\n";
       cuerpoCorreo+=""+element.producto.nombre+" = "+element.cantidadProducto+" X "+element.producto.valor+"$"+" = "+element.totalProducto+"$\n";
-
     });
     cuerpoCorreo+="------------------------------------------------------------\n";
     cuerpoCorreo+="Total: "+pedido.total+"$\n\n";
