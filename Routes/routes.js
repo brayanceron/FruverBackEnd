@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { postClientes, getClientes, getCliente, deleteClientes, putClientes, login, verificarTokenSesion, getRol } from '../Controllers/cliente.controller.js';
 import { getProducto, getProductos, postProductos, putProductos, deleteProductos } from '../Controllers/producto.controller.js';
-import { getPedido, getPedidos, postPedidos, deletePedido, procesarPedido, getPedidosCliente } from '../Controllers/pedido.controller.js';
+import { getPedido, getPedidos, postPedidos,putPedidos, deletePedido, procesarPedido, getPedidosCliente } from '../Controllers/pedido.controller.js';
 import { verificarToken } from '../Middleware/autenticacion.js';
 import { upload } from '../Middleware/multer.js';
 const router = Router();
@@ -20,8 +20,8 @@ router.get("/pedido/:idPedido", verificarToken, getPedido);
 router.get("/pedidos/cliente/:idCliente", verificarToken, getPedidosCliente);
 router.post("/pedidos", verificarToken, postPedidos);
 router.put("/pedidos/procesar/:idPedido",verificarToken,procesarPedido);
-//router.put("/pedidos/:idPedido",putProductos);
-router.delete("/pedidos/:idPedido", deletePedido);
+router.put("/pedidos/:idPedido",verificarToken, putPedidos);
+router.delete("/pedidos/:idPedido",verificarToken, deletePedido);
 //------------------------------------
 router.get("/clientes", verificarToken, getClientes);
 router.get("/cliente/:idCliente", verificarToken, getCliente);
