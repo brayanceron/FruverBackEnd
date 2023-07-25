@@ -20,8 +20,9 @@ const postPedidos = async (req, res) => {
     productos.forEach(async producto => {
       const productoEncontrado = await Producto.findByPk(producto.idProducto);
       let cantidadProducto = producto.cantidadProducto;
-      let totalProducto = productoEncontrado.valor * producto.cantidadProducto;
+      let totalProducto = productoEncontrado.valor * cantidadProducto;
       totalCompra = totalCompra + totalProducto;
+      
       const newProducto = await detallePedido.create({
         idProducto: producto.idProducto,
         idPedido: idPedido,
@@ -144,4 +145,45 @@ const procesarPedido = async (req, res) => {
   }
 };
 
-export { postPedidos, getPedido, getPedidos, deletePedido, procesarPedido, getPedidosCliente };
+const putPedidos = async (req, res) => {
+  const { idPedido } = req.params;
+  const { productos,procesado,idCliente } = req.body;
+
+  try {
+    let totalCompra = 0;
+    await detallePedido.destroy({
+      where: {idPedido},
+    });
+
+    const newPedido = await Pedido.findByPk(idPedido);
+
+    var itemsProcesado = 0;
+    productos.forEach(async (producto,index) => {
+      const productoEncontrado = await Producto.findByPk(producto.idProducto);
+      let cantidadProducto =  producto.cantidadProducto;
+      let totalProducto =  productoEncontrado.valor * cantidadProducto;
+      totalCompra =  totalCompra + totalProducto;
+      
+      const newProducto = await detallePedido.create({
+        idProducto: producto.idProducto,
+        idPedido: idPedido,
+        cantidadProducto: cantidadProducto,
+        totalProducto: totalProducto
+      });
+      console.log(index)
+      itemsProcesado++;
+      if(itemsProcesado === productos.length) {callback();}
+    });
+
+    async function callback () {      
+      newPedido.total= totalCompra;
+      newPedido.procesado=procesado;
+      const modPedido = await newPedido.save();
+      res.status(200).json(modPedido);
+    }    
+  } catch (error) {
+    res.status(400).json({ err: error, mensaje: error.message });
+  }
+};
+
+export { postPedidos,putPedidos, getPedido, getPedidos, deletePedido, procesarPedido, getPedidosCliente };
