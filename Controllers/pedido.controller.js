@@ -122,18 +122,18 @@ const procesarPedido = async (req, res) => {
   try {
     const pedido = await Pedido.findByPk(idPedido, {
       include: [{
-        model: detallePedido,
-        include: { model: Producto,/*include: { model: Cliente }*/ }
-      },
-      {
-        model: Cliente
-      }
+          model: detallePedido,
+          include: { model: Producto,}
+        },
+        {
+          model: Cliente
+        }
       ]
     });
-
+    if(pedido.procesado==true){return res.status(409).json({ mensaje: "El pedido no puede ser modificado porque ya fue procesado" });}
     pedido.procesado = true;
     const modPedido = await pedido.save();
-
+    //console.log("Si");
     let correoCliente = pedido.cliente.correo;
     let asunto = "Pedido Fruver";
 
@@ -150,12 +150,13 @@ const putPedidos = async (req, res) => {
   const { productos,procesado,idCliente } = req.body;
 
   try {
+    const newPedido = await Pedido.findByPk(idPedido);
+    if(newPedido.procesado==true){return res.status(409).json({ mensaje: "El pedido no puede ser modificado porque ya fue procesado" });}
+
     let totalCompra = 0;
     await detallePedido.destroy({
       where: {idPedido},
     });
-
-    const newPedido = await Pedido.findByPk(idPedido);
 
     var itemsProcesado = 0;
     productos.forEach(async (producto,index) => {

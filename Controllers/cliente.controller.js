@@ -79,40 +79,44 @@ const deleteClientes = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    const { correo, contrasena } = req.body;
+    try{
+        const { correo, contrasena } = req.body;
 
-    const user = await Cliente.findOne({
-        where: { correo: correo }
-    });
+        const user = await Cliente.findOne({
+            where: { correo: correo }
+        });
 
-    if (!user) {
-        return res.status(404).json({ msg: "Usuario no encontrado" });
+        if (!user) {
+            return res.status(404).json({ msg: "Usuario no encontrado" });
+        }
+
+        if (!bcrypt.compareSync(contrasena, user.contrasena)) {
+            return res.status(401).json({ msg: "Credenciales incorrectas" });
+        }
+
+        res.status(200).json({ token: crearToken(user), msg: "Login exitoso" },);
     }
-
-    if (!bcrypt.compareSync(contrasena, user.contrasena)) {
-        return res.status(401).json({ msg: "Credenciales incorrectas" });
+    catch(error){
+        res.status(400).json({ mensaje: error.message });
     }
-
-    res.status(200).json({ token: crearToken(user), msg: "Login exitoso" },);
 }
 
 const verificarTokenSesion = (req, res) => {
     const token = req.headers['authorization'];
-    //console.log("VERIFICAR ROKEN")
     if (!token) {
-        return res.status(401).json({ msg: "No se encontro el token" });
+        return res.status(401).json({ msg: "No se encontro el token", status:"401" });
     }
     else {
         try {
             let payload = jwt.verify(token, SECRET);
             //comprobacion de si el token expiro o no
             if (Date.now() > payload.exp) {
-                return res.status(401).json({ msg: "Token expirado" });
+                return res.status(401).json({ msg: "Token expirado", status:"401"  });
             }
-            return res.status(200).json({ msg: "Token valido" });
+            return res.status(200).json({ msg: "Token valido", status:"200"  });
 
         } catch (error) {
-            return res.status(401).json({ msg: error.message });
+            return res.status(401).json({ msg: error.message, status:"401"  });
         }
     }
 }

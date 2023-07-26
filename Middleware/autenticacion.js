@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 
-
 let SECRET = process.env.SECRET
-
 
 function verificarToken (req, res,next){
     const token= req.headers['authorization'];
@@ -17,7 +15,6 @@ function verificarToken (req, res,next){
             if(Date.now()>payload.exp){
                 return res.status(401).json({msg:"Token expirado"});
             }
-            //return res.status(200).json({msg:"Token valido"});
         }catch(error){
             return res.status(401).json({msg:"Error 500 "+error.message});
         }
