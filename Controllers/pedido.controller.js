@@ -17,6 +17,7 @@ const postPedidos = async (req, res) => {
     });
     let idPedido = newPedido.idPedido;
 
+    let itemsProcesado = 0;
     productos.forEach(async producto => {
       const productoEncontrado = await Producto.findByPk(producto.idProducto);
       let cantidadProducto = producto.cantidadProducto;
@@ -29,15 +30,16 @@ const postPedidos = async (req, res) => {
         cantidadProducto: cantidadProducto,
         totalProducto: totalProducto
       });
-
+      itemsProcesado++;
+      if(itemsProcesado === productos.length) {callback();}
     });
 
-    //Actualizando el precio total
-    const newPedido2 = await Pedido.findByPk(idPedido);
-    newPedido2.total = totalCompra;
-    const modPedido = await newPedido2.save();
-
-    res.status(200).json(modPedido);
+    async function callback () {      
+      const newPedido2 = await Pedido.findByPk(idPedido);
+      newPedido2.total = totalCompra;
+      const modPedido = await newPedido2.save();
+      res.status(200).json(modPedido);
+    }
   } catch (error) {
     res.status(400).json({ err: error, mensaje: error.message });
   }
@@ -158,7 +160,7 @@ const putPedidos = async (req, res) => {
       where: {idPedido},
     });
 
-    var itemsProcesado = 0;
+    let itemsProcesado = 0;
     productos.forEach(async (producto,index) => {
       const productoEncontrado = await Producto.findByPk(producto.idProducto);
       let cantidadProducto =  producto.cantidadProducto;
@@ -171,7 +173,6 @@ const putPedidos = async (req, res) => {
         cantidadProducto: cantidadProducto,
         totalProducto: totalProducto
       });
-      console.log(index)
       itemsProcesado++;
       if(itemsProcesado === productos.length) {callback();}
     });
