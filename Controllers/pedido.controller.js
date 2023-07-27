@@ -149,7 +149,7 @@ const procesarPedido = async (req, res) => {
 
 const putPedidos = async (req, res) => {
   const { idPedido } = req.params;
-  const { productos,procesado,idCliente } = req.body;
+  const { productos,procesado } = req.body;
 
   try {
     const newPedido = await Pedido.findByPk(idPedido);
